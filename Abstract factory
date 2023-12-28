@@ -1,0 +1,91 @@
+#include <iostream>
+#include <memory>
+
+// Абстрактний клас продукту A
+class AbstractProductA {
+public:
+    virtual ~AbstractProductA() {}
+    virtual string UsefulFunctionA() const = 0;
+};
+
+// Абстрактний клас продукту B
+class AbstractProductB {
+public:
+    virtual ~AbstractProductB() {}
+    virtual string UsefulFunctionB() const = 0;
+};
+
+// Конкретні продукти створені кожною окремою фабрикою
+class ConcreteProductA1 : public AbstractProductA {
+public:
+    string UsefulFunctionA() const override {
+        return "Результат продукту A1";
+    }
+};
+
+class ConcreteProductA2 : public AbstractProductA {
+public:
+    string UsefulFunctionA() const override {
+        return "Результат продукту A2";
+    }
+};
+
+class ConcreteProductB1 : public AbstractProductB {
+public:
+    string UsefulFunctionB() const override {
+        return "Результат продукту B1";
+    }
+};
+
+class ConcreteProductB2 : public AbstractProductB {
+public:
+    string UsefulFunctionB() const override {
+        return "Результат продукту B2";
+    }
+};
+
+// Абстрактна фабрика, яка визначає методи для створення абстрактних продуктів
+class AbstractFactory {
+public:
+    virtual unique_ptr<AbstractProductA> CreateProductA() const = 0;
+    virtual unique_ptr<AbstractProductB> CreateProductB() const = 0;
+};
+
+// Конкретні фабрики для створення конкретних продуктів
+class ConcreteFactory1 : public AbstractFactory {
+public:
+    unique_ptr<AbstractProductA> CreateProductA() const override {
+        return make_unique<ConcreteProductA1>();
+    }
+    unique_ptr<AbstractProductB> CreateProductB() const override {
+        return make_unique<ConcreteProductB1>();
+    }
+};
+
+class ConcreteFactory2 : public AbstractFactory {
+public:
+    unique_ptr<AbstractProductA> CreateProductA() const override {
+        return make_unique<ConcreteProductA2>();
+    }
+    unique_ptr<AbstractProductB> CreateProductB() const override {
+        return make_unique<ConcreteProductB2>();
+    }
+};
+
+// Клієнтський код, який працює з фабриками та продуктами
+void ClientCode(const AbstractFactory &factory) {
+    auto productA = factory.CreateProductA();
+    auto productB = factory.CreateProductB();
+    cout << productA->UsefulFunctionA() << "\n";
+    cout << productB->UsefulFunctionB() << "\n";
+}
+
+int main() {
+    unique_ptr<AbstractFactory> factory1 = make_unique<ConcreteFactory1>();
+    ClientCode(*factory1);
+
+    unique_ptr<AbstractFactory> factory2 = make_unique<ConcreteFactory2>();
+    ClientCode(*factory2);
+
+    return 0;
+}
